@@ -273,9 +273,6 @@ footer { background-color: var(--header-bg); padding: 2rem 1rem; border-top: 1px
     margin: 10px 0;
 }
   </style>
-  <!-- Add these before the </head> tag -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
   <script>
@@ -377,21 +374,7 @@ footer { background-color: var(--header-bg); padding: 2rem 1rem; border-top: 1px
 
 <!-- Add this new modal container to your HTML body -->
 <div id="checkout-payment-modal" class="modal"></div>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCuNf6uyioPN4K1x7u7SowEwPOqvRZFClc",
-  authDomain: "smartparktaeayvindia.firebaseapp.com",
-  projectId: "smartparktaeayvindia",
-  storageBucket: "smartparktaeayvindia.firebasestorage.app",
-  messagingSenderId: "818399084805",
-  appId: "1:818399084805:web:f88fb1e5747705a58ab76c",
-  measurementId: "G-5LTCJ8K82X"
-};
-</script>
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
   <script>
     // --- DOM Elements ---
     const mapContainer = document.getElementById('map-container'); 
@@ -572,7 +555,6 @@ async function displayLatestBookingOnLoad() {
         const enhancedBookingDetails = { ...bookingDetails, ...qrData };
         allBookings.push(enhancedBookingDetails);
         localStorage.setItem('allSmartParkBookings', JSON.stringify(allBookings));
-        db.ref('bookings/' + qrData.bookingId).set(enhancedBookingDetails);
 
         updateSessionPanel();
         await generateEnhancedMapReceipt(bookingDetails, zoneData, qrData);
