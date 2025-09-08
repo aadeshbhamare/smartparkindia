@@ -139,38 +139,39 @@
 
         let html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
         
-        // --- BEFORE (The old way) ---
-const allBookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
-// ...
-const bookingIndex = allBookings.findIndex(b => b.bookingId === bookingId);
-if (bookingIndex > -1) {
-    // ...
-    allBookings[bookingIndex].status = 'arrived';
-    allBookings[bookingIndex].arrivalTime = Date.now();
-    localStorage.setItem('allSmartParkBookings', JSON.stringify(allBookings));
-    //...
-}
-
-const bookingRef = db.ref('bookings/' + bookingId);
-bookingRef.once('value', (snapshot) => {
-    if (snapshot.exists()) {
-        const booking = snapshot.val();
-        if (booking.status === 'arrived') {
-             alert(`ℹ️ Arrival for booking ${bookingId} has already been confirmed.`);
-             return;
+        function processArrivalConfirmation(qrInput) {
+            try {
+                let bookingId;
+                const allBookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
+                if (qrInput.startsWith('{')) {
+                    bookingId = JSON.parse(qrInput).bookingId;
+                } else {
+                    bookingId = qrInput;
+                }
+                if (!bookingId) { alert('❌ Invalid Booking ID format.'); return false; }
+                const bookingIndex = allBookings.findIndex(b => b.bookingId === bookingId);
+                if (bookingIndex > -1) {
+                    if (allBookings[bookingIndex].status ==='arrived') {
+                        alert(`ℹ️ Arrival for booking ${bookingId} has already been confirmed.`);
+                        return false;
+                    }
+                    allBookings[bookingIndex].status = 'arrived';
+                    allBookings[bookingIndex].arrivalTime = Date.now();
+                    localStorage.setItem('allSmartParkBookings', JSON.stringify(allBookings));
+                    alert(`✅ Arrival confirmed for booking ID: ${bookingId}`);
+                    updateAdminBookingsList();
+                    loadBookingData();
+                    return true;
+                } else {
+                    alert(`❌ Booking ID not found: ${bookingId}`);
+                    return false;
+                }
+            } catch (error) {
+                console.error("Processing Error:", error);
+                alert('❌ Invalid QR code or Booking ID format.');
+                return false;
+            }
         }
-        // Update the status and add arrivalTime in the database
-        bookingRef.update({
-            status: 'arrived',
-            arrivalTime: Date.now()
-        });
-        alert(`✅ Arrival confirmed for booking ID: ${bookingId}`);
-        // The real-time listener will automatically update the UI.
-    } else {
-        alert(`❌ Booking ID not found: ${bookingId}`);
-    }
-});
-return true; // Assume success and let the listener handle UI
         
         function loadBookingData() {
             const bookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
@@ -269,56 +270,6 @@ return true; // Assume success and let the listener handle UI
                 window.location.href = 'index.html';
             });
         });
-        // This new function will listen for all changes in the database
-function listenForBookings() {
-    const bookingsRef = db.ref('bookings');
-    
-    // .on() is the real-time listener. It runs whenever data changes.
-    bookingsRef.on('value', (snapshot) => {
-        const bookingsData = snapshot.val();
-        const allBookings = bookingsData ? Object.values(bookingsData) : [];
-
-        // Update the main history table
-        populateHistoryTable(allBookings);
-        // Update the live session list
-        populateAdminLiveList(allBookings);
-    });
-}
-
-// Renamed your old functions to be more specific
-function populateHistoryTable(bookings) {
-    bookingsTableBody.innerHTML = '';
-    if (bookings.length === 0) {
-        bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No booking data found.</td></tr>`;
-        exportBtn.disabled = true;
-        clearBtn.disabled = true;
-        return;
-    }
-    exportBtn.disabled = false;
-    clearBtn.disabled = false;
-    bookings.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-    bookings.forEach(booking => {
-        const entryDate = new Date(booking.entryTime);
-        const monthName = entryDate.toLocaleString('default', { month: 'long' });
-        const status = booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Unknown';
-        const row = `<tr><td><span class="status-badge status-${booking.status || 'unknown'}">${status}</span></td><td>${monthName} ${entryDate.getFullYear()}</td><td>${entryDate.toLocaleString()}</td><td>${booking.bookedSpots || booking.spots}</td><td>${booking.fullname || booking.customerName}</td><td>${booking.mobile}</td><td>${booking.primaryVehicle}</td></tr>`;
-        bookingsTableBody.innerHTML += row;
-    });
-}
-
-function populateAdminLiveList(bookings) {
-    const activeBookings = bookings.filter(b => b.status !== 'completed');
-    if (activeBookings.length === 0) {
-        adminBookingsContainer.innerHTML = '<p style="text-align: center; color: #666;">No active bookings</p>';
-        return;
-    }
-    activeBookings.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-    adminBookingsContainer.innerHTML = activeBookings.map(booking => {
-        const statusClass = `status-${booking.status}`;
-        const statusText = booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
-        return `<div class="admin-booking-item"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><strong style="font-size: 1.1rem;">${booking.bookingId}</strong><span class="status-badge ${statusClass}">${statusText}</span></div><div><strong>Customer:</strong> ${booking.customerName || booking.fullname} | <strong>Vehicle:</strong> ${booking.primaryVehicle} | <strong>Spots:</strong> ${booking.spots || booking.bookedSpots}</div><div style="font-size: 0.9rem; color: #666; margin-top: 5px;"><strong>Entry Time:</strong> ${new Date(booking.entryTime).toLocaleString()}</div></div>`;
-    }).join('');
-}
     </script>
 </body>
 </html>
