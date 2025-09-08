@@ -367,7 +367,7 @@ footer { background-color: var(--header-bg); padding: 2rem 1rem; border-top: 1px
 
    <div class="footer-logo-line">
         <!-- This is your new logo image -->
-        <img src="logo.png" alt="SmartPark Company Logo" style="height:50px;horizontal-align:center;">
+        <img src="logo.PNG" alt="SmartPark Company Logo" style="height:50px;horizontal-align:center;">
         <div class="logo">SmartPark</div>
     </div>
   </footer>
@@ -526,7 +526,7 @@ async function displayLatestBookingOnLoad() {
 
         // Create QR data
         const qrData = createBookingQRData(bookingDetails, spotsToBook);
-        
+          const NPOINT_BIN_ID = 'ea6a551c9b329b9f08fc'; // Your specific ID is here
         const confirmationTime = Date.now();
         const zoneId = spotsToBook[0].split('-')[0];
         const zoneData = parkingZonesData.find(z => z.id === zoneId);
@@ -552,10 +552,36 @@ async function displayLatestBookingOnLoad() {
 
         // Save to global bookings for guard panel
         const allBookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
+                // ... inside handleBooking function ...
         const enhancedBookingDetails = { ...bookingDetails, ...qrData };
-        allBookings.push(enhancedBookingDetails);
-        localStorage.setItem('allSmartParkBookings', JSON.stringify(allBookings));
 
+        // --- NEW CODE TO SAVE TO A SERVER ---
+        // You would get this URL and Key from your backend service (like Supabase)
+        const DATABASE_URL = 'YOUR_DATABASE_URL/rest/v1/bookings';
+        const API_KEY = 'YOUR_PUBLIC_API_KEY';
+
+        fetch(DATABASE_URL, {
+            method: 'POST', // Creates a new record
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': API_KEY,
+                'Authorization': `Bearer ${API_KEY}`
+            },
+            body: JSON.stringify(enhancedBookingDetails) // Send the new booking data
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Booking saved to central database successfully!', data);
+        })
+        .catch(error => {
+            console.error('Error saving booking to central database:', error);
+            alert('Could not complete booking. Please try again.');
+        });
         updateSessionPanel();
         await generateEnhancedMapReceipt(bookingDetails, zoneData, qrData);
         bookingSection.innerHTML = '';
@@ -1323,8 +1349,6 @@ function loadStateFromLocalStorage() {
   </script>
 </body>
 </html> 
-
-
 
 
 
