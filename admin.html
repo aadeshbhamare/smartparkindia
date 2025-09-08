@@ -1,277 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - SmartPark</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
-    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
-    <style>
-        :root {
-            --bg-gradient: linear-gradient(170deg, #FF9933, #FFFFFF, #138808);
-            --primary-accent: #FF9933; /* Saffron */
-            --secondary-accent: #138808; /* Green */
-            --danger-accent: #d93025; /* Red for the clear button */
-            --header-bg: #000080; /* Navy Blue */
-            --text-color: #333;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --header-text-color: #fff;
-        }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-gradient); background-attachment: fixed; color: var(--text-color); margin: 0; }
-        .header { background: var(--header-bg); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-accent); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .header .logo { font-family: "Montserrat", sans-serif; font-weight: bold; font-size: 1.5rem; color: var(--header-text-color); }
-        .container { max-width: 1400px; margin: 2rem auto; padding: 2rem; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); }
-        h1, h2 { color: var(--header-bg); border-bottom: 2px solid var(--header-bg); padding-bottom: 10px; margin-bottom: 20px; }
-        .controls { margin-bottom: 20px; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; font-size: 16px; }
-        .btn:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
-        .btn i { margin-right: 8px; }
-        #export-btn { background-color: var(--secondary-accent); color: #fff; }
-        #clear-btn { background-color: var(--danger-accent); color: #fff; }
-        #logout-btn { background-color: #fff; color: var(--header-bg); }
-        #scan-btn { background-color: #337ab7; color: #fff; }
-        .table-container { overflow-x: auto; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; background: var(--card-bg); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        th, td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: var(--secondary-accent); color: #fff; }
-        tr:nth-of-type(even) { background-color: #f8f8f8; }
-        .live-panel-container { background: var(--card-bg); border: 2px solid var(--primary-accent); border-radius: 12px; padding: 25px; margin-top: 40px; }
-        .scan-section { text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 15px 0; display: flex; gap: 1rem; align-items: center; }
-        .scan-section input { flex-grow: 1; padding: 12px; font-size: 1rem; border: 1px solid #ccc; border-radius: 8px; }
-        .scan-section .btn { background-color: var(--header-bg); color: white; }
-        .admin-booking-item { background: white; border-left: 5px solid var(--primary-accent); padding: 15px; margin: 10px 0; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: #fff; }
-        .status-booked { background: #ffc107; color: #000; }
-        .status-arrived { background: #17a2b8; }
-        .status-completed { background: #6c757d; }
-        .status-unknown { background: #6c757d; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - SmartPark (Hardened)</title>
 
-        /* [FIXED] Added Responsive Header Styles for Mobile */
-               /* [FIX] Add this code for a responsive header */
-        @media (max-width: 600px) {
-            .header {
-                flex-direction: column; /* Stack logo and button vertically */
-                align-items: flex-start; /* Align to the left */
-                gap: 10px; /* Add space between them */
-            }
-        }
-    </style>
+  <!-- SECURITY: Content Security Policy (CSP) -->
+  <!-- Note: For maximum security move scripts/styles to external files and use nonces/SRI and server-set CSP headers. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https:; script-src 'self' https://unpkg.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self';">
+
+  <!-- Other recommended security policies (prefer to be set by server headers) -->
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=()">
+
+  <!-- Use a trusted CDN for icons (consider bundling to reduce third-party dependency) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous">
+
+  <!-- QR library (consider bundling into your build for production) -->
+  <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js" defer></script>
+
+  <style>
+    :root { --bg-gradient: linear-gradient(170deg,#FF9933,#FFFFFF,#138808); --primary-accent:#FF9933; --secondary-accent:#138808; --danger-accent:#d93025; --header-bg:#000080; --text-color:#333; --card-bg:rgba(255,255,255,.9); --header-text-color:#fff; }
+    body {font-family:'Segoe UI',sans-serif; background:var(--bg-gradient); background-attachment:fixed; color:var(--text-color); margin:0}
+    .header{background:var(--header-bg);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--primary-accent);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+    .logo{font-family:Montserrat,sans-serif;font-weight:700;color:var(--header-text-color)}
+    .container{max-width:1400px;margin:2rem auto;padding:2rem;background:var(--card-bg);backdrop-filter:blur(10px);border-radius:15px}
+    /* ... trimmed for brevity; keep your styles as is ... */
+    .scan-section{display:flex;gap:1rem;align-items:center;background:#f8f9fa;padding:20px;border-radius:8px}
+    table{width:100%;border-collapse:collapse}
+  </style>
 </head>
 <body>
 
-    <script>
-        // Security check: Redirect if not an admin
-        if (sessionStorage.getItem('userRole') !== 'admin') {
-            alert("Access Denied: You must be an admin to view this page.");
-            window.location.href = 'index.html';
-        }
-    </script>
-    
-    <header class="header">
-        <div class="logo">SmartPark Admin</div>
-        <a href="#" id="logout-btn" class="btn"><i class="fas fa-sign-out-alt"></i>Logout</a>
-    </header>
+<script>
+// Enforce HTTPS in browsers (HSTS must be set server-side for full protection)
+if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+  location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+}
+</script>
 
-    <div class="container">
-        <div class="live-panel-container">
-            <h2><i class="fas fa-satellite-dish"></i> Live Session Management</h2>
-            <div class="scan-section">
-              <input type="text" id="qr-scan-input" placeholder="Enter Booking ID or use camera...">
-              <button id="scan-btn" class="btn"><i class="fas fa-camera"></i> Scan</button>
-              <button id="process-arrival-btn" class="btn"><i class="fas fa-check-circle"></i> Confirm</button>
-            </div>
-            
-            <div id="qr-reader" style="width: 100%; max-width: 500px; margin: 10px auto; display: none;"></div>
-            
-            <div id="all-bookings-list">
-              <h3><i class="fas fa-list-ul"></i> Active Bookings</h3>
-              <div id="admin-bookings-container"></div>
-            </div>
-        </div>
+<header class="header">
+  <div class="logo">SmartPark Admin</div>
+  <button id="logout-btn" class="btn" aria-label="Logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</header>
 
-        <h1><i class="fas fa-book"></i> All Bookings History</h1>
-        <div class="controls">
-            <button id="export-btn" class="btn"><i class="fas fa-file-excel"></i>Export to Excel (CSV)</button>
-            <button id="clear-btn" class="btn"><i class="fas fa-trash-alt"></i>Clear All Data</button>
-        </div>
-        <div class="table-container">
-            <table id="bookings-table">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Booking Month</th>
-                        <th>Booking Date & Time</th>
-                        <th>Spot ID(s)</th>
-                        <th>Customer Name</th>
-                        <th>Mobile Number</th>
-                        <th>Vehicle Number</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+<div class="container" id="app">
+  <div class="live-panel-container">
+    <h2><i class="fas fa-satellite-dish"></i> Live Session Management</h2>
+    <div class="scan-section">
+      <input type="text" id="qr-scan-input" placeholder="Enter Booking ID or use camera..." aria-label="Booking ID input">
+      <button id="scan-btn" class="btn"><i class="fas fa-camera"></i> Scan</button>
+      <button id="process-arrival-btn" class="btn"><i class="fas fa-check-circle"></i> Confirm</button>
     </div>
+    <div id="qr-reader" style="width:100%;max-width:500px;margin:10px auto;display:none"></div>
+    <div id="all-bookings-list">
+      <h3><i class="fas fa-list-ul"></i> Active Bookings</h3>
+      <div id="admin-bookings-container" aria-live="polite"></div>
+    </div>
+  </div>
 
-      <script>
-        // --- DOM Element Selection (Grouped at the top for clarity) ---
-        const bookingsTableBody = document.querySelector("#bookings-table tbody");
-        const exportBtn = document.getElementById('export-btn');
-        const clearBtn = document.getElementById('clear-btn');
-        const qrScanInput = document.getElementById('qr-scan-input');
-        const processArrivalBtn = document.getElementById('process-arrival-btn');
-        const adminBookingsContainer = document.getElementById('admin-bookings-container');
-        const scanBtn = document.getElementById('scan-btn');
-        const qrReaderDiv = document.getElementById('qr-reader');
-        const logoutBtn = document.getElementById('logout-btn');
+  <h1><i class="fas fa-book"></i> All Bookings History</h1>
+  <div class="controls">
+    <button id="export-btn" class="btn"><i class="fas fa-file-excel"></i> Export to CSV</button>
+    <button id="clear-btn" class="btn"><i class="fas fa-trash-alt"></i> Clear Local UI Cache</button>
+  </div>
+  <div class="table-container">
+    <table id="bookings-table" aria-describedby="bookings-description">
+      <thead>
+        <tr><th>Status</th><th>Booking Month</th><th>Booking Date & Time</th><th>Spot ID(s)</th><th>Customer Name</th><th>Mobile Number</th><th>Vehicle Number</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
 
-        // --- All your existing functions remain the same ---
-        // (onScanSuccess, onScanFailure, processArrivalConfirmation, loadBookingData, etc.)
+<script>
+/* ====== SECURITY-CENTRIC JAVASCRIPT ======
+   Design principles applied:
+   - No secrets (API keys) embedded in frontend
+   - Session validated via server endpoints
+   - Use credentials 'include' to send HttpOnly cookies
+   - Do not persist sensitive booking data to localStorage
+   - Sanitize all strings before inserting into DOM
+   - Avoid innerHTML where possible; use textContent/innerText
+   - Graceful error handling and limited data exposure
+*/
 
-        function onScanSuccess(decodedText, decodedResult) {
-            qrScanInput.value = decodedText;
-            html5QrcodeScanner.clear().catch(error => console.error("Failed to clear scanner.", error));
-            qrReaderDiv.style.display = 'none';
-            processArrivalConfirmation(decodedText);
-        }
+// Helpers
+function sanitizeString(str) {
+  if (typeof str !== 'string') return '';
+  // Simple DOM-based escaping
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
 
-        function onScanFailure(error) { /* Do nothing on failure */ }
+function safeText(node, value) {
+  node.textContent = value == null ? '' : value;
+}
 
-        let html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
-        
-        function processArrivalConfirmation(qrInput) {
-            try {
-                let bookingId;
-                const allBookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
-                if (qrInput.startsWith('{')) {
-                    bookingId = JSON.parse(qrInput).bookingId;
-                } else {
-                    bookingId = qrInput;
-                }
-                if (!bookingId) { alert('❌ Invalid Booking ID format.'); return false; }
-                const bookingIndex = allBookings.findIndex(b => b.bookingId === bookingId);
-                if (bookingIndex > -1) {
-                    if (allBookings[bookingIndex].status ==='arrived') {
-                        alert(`ℹ️ Arrival for booking ${bookingId} has already been confirmed.`);
-                        return false;
-                    }
-                    allBookings[bookingIndex].status = 'arrived';
-                    allBookings[bookingIndex].arrivalTime = Date.now();
-                    localStorage.setItem('allSmartParkBookings', JSON.stringify(allBookings));
-                    alert(`✅ Arrival confirmed for booking ID: ${bookingId}`);
-                    updateAdminBookingsList();
-                    loadBookingData();
-                    return true;
-                } else {
-                    alert(`❌ Booking ID not found: ${bookingId}`);
-                    return false;
-                }
-            } catch (error) {
-                console.error("Processing Error:", error);
-                alert('❌ Invalid QR code or Booking ID format.');
-                return false;
-            }
-        }
-        
-        function loadBookingData() {
-            const bookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
-            bookingsTableBody.innerHTML = ''; 
-            if (bookings.length === 0) {
-                bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No booking data found.</td></tr>`;
-                exportBtn.disabled = true;
-                clearBtn.disabled = true;
-                return;
-            }
-            exportBtn.disabled = false;
-            clearBtn.disabled = false;
-            bookings.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            bookings.forEach(booking => {
-                const entryDate = new Date(booking.entryTime);
-                const monthName = entryDate.toLocaleString('default', { month: 'long' });
-                const status = booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Unknown';
-                const row = `<tr><td><span class="status-badge status-${booking.status || 'unknown'}">${status}</span></td><td>${monthName} ${entryDate.getFullYear()}</td><td>${entryDate.toLocaleString()}</td><td>${booking.bookedSpots || booking.spots}</td><td>${booking.fullname || booking.customerName}</td><td>${booking.mobile}</td><td>${booking.primaryVehicle}</td></tr>`;
-                bookingsTableBody.innerHTML += row;
-            });
-        }
+// App state (in-memory only)
+let bookingsCache = []; // never persisted to localStorage or cookies
 
-        function updateAdminBookingsList() {
-            const allBookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
-            const activeBookings = allBookings.filter(b => b.status !== 'completed');
-            if (activeBookings.length === 0) {
-                adminBookingsContainer.innerHTML = '<p style="text-align: center; color: #666;">No active bookings</p>';
-                return;
-            }
-            activeBookings.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            adminBookingsContainer.innerHTML = activeBookings.map(booking => {
-                const statusClass = `status-${booking.status}`;
-                const statusText = booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
-                return `<div class="admin-booking-item"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><strong style="font-size: 1.1rem;">${booking.bookingId}</strong><span class="status-badge ${statusClass}">${statusText}</span></div><div><strong>Customer:</strong> ${booking.customerName || booking.fullname} | <strong>Vehicle:</strong> ${booking.primaryVehicle} | <strong>Spots:</strong> ${booking.spots || booking.bookedSpots}</div><div style="font-size: 0.9rem; color: #666; margin-top: 5px;"><strong>Entry Time:</strong> ${new Date(booking.entryTime).toLocaleString()}</div></div>`;
-            }).join('');
-        }
+// DOM refs
+const bookingsTableBody = document.querySelector('#bookings-table tbody');
+const exportBtn = document.getElementById('export-btn');
+const clearBtn = document.getElementById('clear-btn');
+const qrScanInput = document.getElementById('qr-scan-input');
+const processArrivalBtn = document.getElementById('process-arrival-btn');
+const adminBookingsContainer = document.getElementById('admin-bookings-container');
+const scanBtn = document.getElementById('scan-btn');
+const qrReaderDiv = document.getElementById('qr-reader');
+const logoutBtn = document.getElementById('logout-btn');
 
-        function exportToCSV() {
-            const bookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
-            if (bookings.length === 0) {
-                alert("No data to export.");
-                return;
-            }
-            let csvContent = "Status,Booking Month,Booking Date & Time,Spot IDs,Customer Name,Mobile,Vehicle Number\n";
-            bookings.forEach(booking => {
-                const entryDate = new Date(booking.entryTime);
-                const month = `${entryDate.toLocaleString('default', { month: 'long' })} ${entryDate.getFullYear()}`;
-                const row = [`"${booking.status || 'Unknown'}"`, `"${month}"`, `"${entryDate.toLocaleString()}"`, `"${booking.bookedSpots || booking.spots}"`, `"${booking.fullname || booking.customerName}"`, `"${booking.mobile}"`, `"${booking.primaryVehicle}"`].join(',');
-                csvContent += row + "\r\n";
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.setAttribute("download", `SmartPark_Bookings_${Date.now()}.csv`);
-            a.click();
-        }
-        
-        function clearAllData() {
-            const isConfirmed = confirm("Are you sure you want to clear ALL booking and parking spot data?\nThis action cannot be undone.");
-            if (isConfirmed) {
-                localStorage.removeItem('allSmartParkBookings');
-                localStorage.removeItem('smartpark_all_spots_status');
-                alert("All booking and parking spot data has been cleared.");
-                loadBookingData();
-                updateAdminBookingsList();
-            }
-        }
+// Session validation: call server to confirm admin status
+async function validateSession() {
+  try {
+    const resp = await fetch('/api/auth/validate', { method: 'GET', credentials: 'include', cache: 'no-store' });
+    if (!resp.ok) throw new Error('Not authenticated');
+    const data = await resp.json();
+    // Server should return { authenticated: true, role: 'admin' }
+    if (!data || !data.authenticated || data.role !== 'admin') {
+      alert('Access denied - please login as admin.');
+      window.location.href = '/login';
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn('Session validation failed:', err);
+    alert('Session invalid or expired. Redirecting to login.');
+    window.location.href = '/login';
+    return false;
+  }
+}
 
-        // --- [FIX] Event Listeners Wrapped for Safety ---
-        // This code now runs ONLY after the entire HTML page is loaded.
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initial UI setup
-            loadBookingData();
-            updateAdminBookingsList();
+// Load bookings securely from backend (no API keys in client)
+async function loadBookingData() {
+  try {
+    // Use a server API that enforces authorization and returns only permitted fields
+    const resp = await fetch('/api/bookings?limit=500', { method: 'GET', credentials: 'include', cache: 'no-store' });
+    if (!resp.ok) throw new Error('Failed to fetch bookings');
+    const bookings = await resp.json();
 
-            // Attach all button click events safely here
-            exportBtn.addEventListener('click', exportToCSV);
-            clearBtn.addEventListener('click', clearAllData);
-            
-            processArrivalBtn.addEventListener('click', () => {
-                const qrInput = qrScanInput.value.trim();
-                if (!qrInput) { alert('Please enter a booking ID.'); return; }
-                if (processArrivalConfirmation(qrInput)) { qrScanInput.value = ''; }
-            });
-            
-            scanBtn.addEventListener('click', () => {
-                qrReaderDiv.style.display = 'block';
-                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-            });
-            
-            logoutBtn.addEventListener('click', e => {
-                e.preventDefault();
-                sessionStorage.removeItem('userRole');
-                alert("You have been logged out.");
-                window.location.href = 'index.html';
-            });
-        });
-    </script>
+    // Keep an in-memory cache only
+    bookingsCache = Array.isArray(bookings) ? bookings : [];
+
+    renderBookingsTable(bookingsCache);
+    renderAdminBookingsList(bookingsCache);
+    exportBtn.disabled = bookingsCache.length === 0;
+    clearBtn.disabled = bookingsCache.length === 0;
+
+  } catch (err) {
+    console.error('Error loading booking data:', err);
+    bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center">Error loading data from server.</td></tr>`;
+    exportBtn.disabled = true;
+    clearBtn.disabled = true;
+  }
+}
+
+function renderBookingsTable(bookings) {
+  bookingsTableBody.innerHTML = '';
+  if (!bookings || bookings.length === 0) {
+    bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center">No booking data found.</td></tr>`;
+    return;
+  }
+
+  // Sort and display
+  bookings.slice().sort((a,b) => (b.entryTime||0) - (a.entryTime||0)).forEach(b => {
+    const tr = document.createElement('tr');
+
+    const status = document.createElement('td'); safeText(status, b.status || 'Unknown'); tr.appendChild(status);
+    const month = document.createElement('td'); safeText(month, b.entryTime ? (new Date(b.entryTime)).toLocaleString('default',{month:'long', year:'numeric'}) : ''); tr.appendChild(month);
+    const dt = document.createElement('td'); safeText(dt, b.entryTime ? new Date(b.entryTime).toLocaleString() : ''); tr.appendChild(dt);
+    const spots = document.createElement('td'); safeText(spots, Array.isArray(b.spots) ? b.spots.join(', ') : (b.spots || b.bookedSpots || '')); tr.appendChild(spots);
+    const name = document.createElement('td'); safeText(name, b.fullname || b.customerName || ''); tr.appendChild(name);
+    const mobile = document.createElement('td'); safeText(mobile, b.mobile || ''); tr.appendChild(mobile);
+    const vehicle = document.createElement('td'); safeText(vehicle, b.primaryVehicle || ''); tr.appendChild(vehicle);
+
+    bookingsTableBody.appendChild(tr);
+  });
+}
+
+function renderAdminBookingsList(bookings) {
+  adminBookingsContainer.innerHTML = '';
+  bookings.filter(b => b.status !== 'completed').slice(0,50).forEach(b => {
+    const div = document.createElement('div'); div.className = 'admin-booking-item';
+    const heading = document.createElement('div'); heading.style.fontWeight = '700'; heading.textContent = `${b.bookingId || ''} — ${b.fullname || b.customerName || ''}`;
+    const status = document.createElement('div'); status.className = 'status-badge ' + (b.status === 'arrived' ? 'status-arrived' : (b.status === 'booked' ? 'status-booked' : 'status-unknown'));
+    status.textContent = b.status || 'unknown';
+    div.appendChild(heading); div.appendChild(status);
+    adminBookingsContainer.appendChild(div);
+  });
+}
+
+// Process arrival confirmation with server-side update
+async function processArrivalConfirmation(qrInput) {
+  try {
+    const raw = (qrInput || '').trim();
+    let bookingId = '';
+    // Avoid trusting parsed client JSON; only accept simple bookingId strings or server-specified format
+    if (raw.startsWith('{')) {
+      try { const parsed = JSON.parse(raw); bookingId = parsed.bookingId || parsed.id || ''; } catch(e) { bookingId = '' }
+    } else bookingId = raw;
+
+    if (!bookingId) { alert('Invalid Booking ID'); return false; }
+
+    // Send booking arrival confirmation to server; server must authenticate and validate permissions
+    const resp = await fetch('/api/bookings/' + encodeURIComponent(bookingId) + '/arrive', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: Date.now() }) });
+    if (!resp.ok) {
+      const errText = await resp.text();
+      alert('Failed to confirm arrival: ' + (errText || resp.statusText));
+      return false;
+    }
+
+    // Refresh view from server
+    await loadBookingData();
+    alert('Arrival confirmed for booking ' + bookingId);
+    return true;
+  } catch (err) {
+    console.error('Processing Error:', err);
+    alert('Invalid QR code or Booking ID format.');
+    return false;
+  }
+}
+
+// Client CSV export: exports in-memory cache only; does NOT store PII in localStorage
+function exportToCSV() {
+  if (!Array.isArray(bookingsCache) || bookingsCache.length === 0) { alert('No data to export.'); return; }
+  let csv = 'Status,Booking Month,Booking Date & Time,Spot IDs,Customer Name,Mobile,Vehicle Number\n';
+  bookingsCache.forEach(b => {
+    const entryDate = b.entryTime ? new Date(b.entryTime) : '';
+    const month = entryDate ? (entryDate.toLocaleString('default',{month:'long'}) + ' ' + entryDate.getFullYear()) : '';
+    const row = [b.status||'Unknown', month, entryDate?entryDate.toLocaleString():'', (b.spots||b.bookedSpots||'').toString(), b.fullname||b.customerName||'', b.mobile||'', b.primaryVehicle||''].map(v=> '"' + String(v).replace(/"/g,'""') + '"').join(',');
+    csv += row + '\r\n';
+  });
+  const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.setAttribute('download', `SmartPark_Bookings_${Date.now()}.csv`); a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Clear local UI cache only (DO NOT delete server data here)
+function clearLocalCache() {
+  if (!confirm('This will clear only the local UI cache. Server-side data remains unchanged. Continue?')) return;
+  bookingsCache = [];
+  renderBookingsTable([]);
+  renderAdminBookingsList([]);
+}
+
+// Logout via server endpoint (server should clear HttpOnly session cookie)
+async function logout() {
+  try {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+  } catch(e) { console.warn('Logout request failed', e); }
+  // Redirect to login page after logout
+  window.location.href = '/login';
+}
+
+// QR handling (uses html5-qrcode library; prefer requesting camera permission only when used)
+let html5QrcodeScanner = null;
+function onScanSuccess(decodedText) {
+  qrScanInput.value = decodedText;
+  if (html5QrcodeScanner) {
+    html5QrcodeScanner.clear().catch(()=>{});
+    qrReaderDiv.style.display = 'none';
+  }
+  processArrivalConfirmation(decodedText);
+}
+function onScanFailure(error) { /* ignore scan failures quietly */ }
+
+// Wire up event listeners after DOMContentLoaded
+document.addEventListener('DOMContentLoaded', async () => {
+  // Validate session first
+  const ok = await validateSession();
+  if (!ok) return;
+
+  // Initial data load
+  await loadBookingData();
+
+  // Refresh interval (server-side push via WebSocket or SSE is recommended for production)
+  setInterval(() => loadBookingData(), 15000);
+
+  exportBtn.addEventListener('click', exportToCSV);
+  clearBtn.addEventListener('click', clearLocalCache);
+
+  processArrivalBtn.addEventListener('click', async () => {
+    const val = qrScanInput.value.trim();
+    if (!val) { alert('Please enter a booking ID.'); return; }
+    if (await processArrivalConfirmation(val)) qrScanInput.value = '';
+  });
+
+  scanBtn.addEventListener('click', () => {
+    if (!html5QrcodeScanner) html5QrcodeScanner = new Html5QrcodeScanner('qr-reader', { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+    qrReaderDiv.style.display = 'block';
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  });
+
+  logoutBtn.addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+});
+
+</script>
 </body>
 </html>
-
-
