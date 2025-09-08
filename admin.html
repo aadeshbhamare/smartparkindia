@@ -173,56 +173,42 @@
             }
         }
         
-               async function loadBookingData() {
-            // --- NEW CODE TO LOAD FROM A SERVER ---
-            const DATABASE_URL = 'YOUR_DATABASE_URL/rest/v1/bookings';
-            const API_KEY = 'YOUR_PUBLIC_API_KEY';
-
-            try {
-                const response = await fetch(`${DATABASE_URL}?select=*`, { // Get all records
-                    headers: {
-                        'apikey': API_KEY,
-                        'Authorization': `Bearer ${API_KEY}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch data');
-                }
-
-                const bookings = await response.json(); // This now contains all bookings from all customers
-                 // --- END OF NEW CODE ---
-
-                bookingsTableBody.innerHTML = '';
-                if (bookings.length === 0) {
-                    bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No booking data found.</td></tr>`;
-                    exportBtn.disabled = true;
-                    clearBtn.disabled = true;
-                    return;
-                }
-                exportBtn.disabled = false;
-                clearBtn.disabled = false;
-                bookings.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                bookings.forEach(booking => {
-                    // ... the rest of your function remains exactly the same
-                    const entryDate = new Date(booking.entryTime);
-                    const monthName = entryDate.toLocaleString('default', { month: 'long' });
-                    // ... etc.
-                });
-
-            } catch (error) {
-                console.error("Error loading booking data:", error);
-                bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Error loading data from the server.</td></tr>`;
+        function loadBookingData() {
+            const bookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
+            bookingsTableBody.innerHTML = ''; 
+            if (bookings.length === 0) {
+                bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No booking data found.</td></tr>`;
+                exportBtn.disabled = true;
+                clearBtn.disabled = true;
+                return;
             }
+            exportBtn.disabled = false;
+            clearBtn.disabled = false;
+            bookings.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            bookings.forEach(booking => {
+                const entryDate = new Date(booking.entryTime);
+                const monthName = entryDate.toLocaleString('default', { month: 'long' });
+                const status = booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Unknown';
+                const row = `<tr><td><span class="status-badge status-${booking.status || 'unknown'}">${status}</span></td><td>${monthName} ${entryDate.getFullYear()}</td><td>${entryDate.toLocaleString()}</td><td>${booking.bookedSpots || booking.spots}</td><td>${booking.fullname || booking.customerName}</td><td>${booking.mobile}</td><td>${booking.primaryVehicle}</td></tr>`;
+                bookingsTableBody.innerHTML += row;
+            });
         }
 
-        // To make the panel "live", you can call this function repeatedly
-        document.addEventListener('DOMContentLoaded', () => {
-            loadBookingData(); // Load once on page load
-            setInterval(loadBookingData, 10000); // And then refresh every 10 seconds
-            updateAdminBookingsList(); // This function will also need to be updated similarly
-            // ... rest of your event listeners
-        });
+        function updateAdminBookingsList() {
+            const allBookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
+            const activeBookings = allBookings.filter(b => b.status !== 'completed');
+            if (activeBookings.length === 0) {
+                adminBookingsContainer.innerHTML = '<p style="text-align: center; color: #666;">No active bookings</p>';
+                return;
+            }
+            activeBookings.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            adminBookingsContainer.innerHTML = activeBookings.map(booking => {
+                const statusClass = `status-${booking.status}`;
+                const statusText = booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
+                return `<div class="admin-booking-item"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><strong style="font-size: 1.1rem;">${booking.bookingId}</strong><span class="status-badge ${statusClass}">${statusText}</span></div><div><strong>Customer:</strong> ${booking.customerName || booking.fullname} | <strong>Vehicle:</strong> ${booking.primaryVehicle} | <strong>Spots:</strong> ${booking.spots || booking.bookedSpots}</div><div style="font-size: 0.9rem; color: #666; margin-top: 5px;"><strong>Entry Time:</strong> ${new Date(booking.entryTime).toLocaleString()}</div></div>`;
+            }).join('');
+        }
+
         function exportToCSV() {
             const bookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
             if (bookings.length === 0) {
