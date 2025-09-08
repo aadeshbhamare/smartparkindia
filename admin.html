@@ -140,7 +140,6 @@
         let html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
         
         function processArrivalConfirmation(qrInput) {
-            const NPOINT_BIN_ID = 'ea6a551c9b329b9f08fc'; // Your specific ID is here
             try {
                 let bookingId;
                 const allBookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
@@ -176,7 +175,6 @@
         
         function loadBookingData() {
             const bookings = JSON.parse(localStorage.getItem('allSmartParkBookings')) || [];
-            const NPOINT_BIN_ID = 'ea6a551c9b329b9f08fc'; // Your specific ID is here
             bookingsTableBody.innerHTML = ''; 
             if (bookings.length === 0) {
                 bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No booking data found.</td></tr>`;
